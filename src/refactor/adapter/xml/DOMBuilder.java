@@ -8,13 +8,12 @@ import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Stack;
 
 public class DOMBuilder extends AbstractBuilder {
 	private Document doc;
 
 	public DOMBuilder(String rootName) {
-		init(rootName);
+		super.startNewBuild(rootName);
 	}
 
 	@Override
@@ -26,18 +25,11 @@ public class DOMBuilder extends AbstractBuilder {
 		return doc;
 	}
 
-	protected void init(String rootName) {
+	@Override
+	protected void initRoot(String rootName) {
 		doc = new DocumentImpl();
 		setRoot(createElement(rootName));
 		doc.appendChild((Node) getRoot().getNode());
-		setCurrent(getRoot());
-		setParent(getRoot());
-		history = new Stack();
-		history.push(getCurrent());
-	}
-
-	public void startNewBuild(String rootName) {
-		init(rootName);
 	}
 
 	public String toString() {

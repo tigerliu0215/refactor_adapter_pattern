@@ -84,4 +84,18 @@ public abstract class AbstractBuilder implements OutputBuilder {
 	}
 
 	public abstract void addValue(String value);
+
+	protected void init(String rootName) {
+		initRoot(rootName);
+		setCurrent(getRoot());
+		setParent(getRoot());
+		history = new Stack();
+		history.push(getCurrent());
+	}
+
+	public void startNewBuild(String rootName) {
+		init(rootName);
+	}
+
+	protected abstract void initRoot(String rootName);
 }
