@@ -1,0 +1,9 @@
+target/classes/production/refactor_adapter_pattern/refactor/adapter/xml/AbstractBuilder.class
+target/classes/production/refactor_adapter_pattern/refactor/adapter/xml/DOMBuilder.class
+target/classes/production/refactor_adapter_pattern/refactor/adapter/xml/OutputBuilder.class
+target/classes/production/refactor_adapter_pattern/refactor/adapter/xml/PrettyPrinter.class
+target/classes/production/refactor_adapter_pattern/refactor/adapter/xml/TagNode.class
+target/classes/production/refactor_adapter_pattern/refactor/adapter/xml/XMLBuilder.class
+target/classes/test/refactor_adapter_pattern/refactor/adapter/xml/AbstractBuilderTest.class
+target/classes/test/refactor_adapter_pattern/refactor/adapter/xml/DOMBuilderTest.class
+target/classes/test/refactor_adapter_pattern/refactor/adapter/xml/XMLBuilderTest.class
