@@ -13,67 +13,14 @@ import java.util.Stack;
 public class DOMBuilder extends AbstractBuilder {
 	private Document doc;
 
-	private NodeAdapter rootAdapter;
-	private NodeAdapter parentAdapter;
-	private NodeAdapter currentAdapter;
-
 	public DOMBuilder(String rootName) {
 		init(rootName);
 	}
 
-	public void addAbove(String uncle) {
-		if (getCurrent() == getRoot())
-			throw new RuntimeException(CANNOT_ADD_ABOVE_ROOT);
-		history.pop();
-		boolean atRootNode = (history.size() == 1);
-		if (atRootNode)
-			throw new RuntimeException(CANNOT_ADD_ABOVE_ROOT);
-		history.pop();
-		setCurrent((NodeAdapter) history.peek());
-		addBelow(uncle);
-	}
-
-	public void addGrandfather(String grandfather) {
-		if (getCurrent() == getRoot())
-			throw new RuntimeException(CANNOT_ADD_ABOVE_ROOT);
-		history.pop();
-		boolean atRootNode = (history.size() == 1);
-		if (atRootNode)
-			throw new RuntimeException(CANNOT_ADD_ABOVE_ROOT);
-		history.pop();
-		history.pop();
-		setCurrent((NodeAdapter) history.peek());
-		addBelow(grandfather);
-	}
-
-	public void addAttribute(String name, String value) {
-		getCurrent().addAttribute(name, value);
-	}
-
-	public void addBelow(String child) {
-		NodeAdapter childNode = createElement(child);
-		getCurrent().appendChild(childNode);
-		setParent(getCurrent());
-		setCurrent(childNode);
-		history.push(getCurrent());
-	}
-
-	private NodeAdapter createElement(String child) {
+	@Override
+	public NodeAdapter createElement(String child) {
 		return new ElementAdapter(doc.createElement(child));
 	}
-
-	public void addBeside(String sibling) {
-		if (getCurrent() == getRoot())
-			throw new RuntimeException(CANNOT_ADD_BESIDE_ROOT);
-		NodeAdapter siblingNode = createElement(sibling);
-		getParent().appendChild(siblingNode);
-		setCurrent(siblingNode);
-		history.pop();
-		history.push(getCurrent());
-	}
-
-	public void addValue(String value) {
-		getCurrent().addValue(doc.createTextNode(value));	}
 
 	public Document getDocument() {
 		return doc;
@@ -107,27 +54,7 @@ public class DOMBuilder extends AbstractBuilder {
 		return stringOut.toString();
 	}
 
-	public NodeAdapter getRoot() {
-		return rootAdapter;
-	}
-
-	public NodeAdapter getParent() {
-		return parentAdapter;
-	}
-
-	public NodeAdapter getCurrent() {
-		return currentAdapter;
-	}
-
-	public void setRoot(NodeAdapter root) {
-		this.rootAdapter = root;
-	}
-
-	public void setParent(NodeAdapter parent) {
-		this.parentAdapter = parent;
-	}
-
-	public void setCurrent(NodeAdapter current) {
-		this.currentAdapter = current;
-	}
+	@Override
+	public void addValue(String value) {
+		getCurrent().addValue(doc.createTextNode(value));	}
 }

@@ -48,6 +48,11 @@ public class XMLBuilder extends AbstractBuilder {
 		history.push(current);
 	}
 
+	@Override
+	public NodeAdapter createElement(String child) {
+		return null;
+	}
+
 	public void addBeside(String sibling) {
 		if (current == root)
 			throw new RuntimeException(CANNOT_ADD_BESIDE_ROOT);
