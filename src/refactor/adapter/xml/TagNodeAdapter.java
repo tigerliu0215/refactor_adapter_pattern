@@ -22,4 +22,9 @@ public class TagNodeAdapter implements NodeAdapter {
     public Object getNode() {
         return node;
     }
+
+    @Override
+    public void addValue(Object value) {
+        node.addValue(value.toString());
+    }
 }

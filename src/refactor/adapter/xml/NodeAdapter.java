@@ -6,4 +6,6 @@ public interface NodeAdapter {
     void appendChild(NodeAdapter childNode);
 
     Object getNode();
+
+    void addValue(Object value);
 }

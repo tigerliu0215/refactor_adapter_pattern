@@ -24,4 +24,9 @@ public class ElementAdapter implements NodeAdapter {
     public Object getNode() {
         return node;
     }
+
+    @Override
+    public void addValue(Object value) {
+        node.appendChild((Node) value);
+    }
 }

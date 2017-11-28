@@ -1,39 +1,40 @@
 package refactor.adapter.xml;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Stack;
-
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Stack;
 
 public class DOMBuilder extends AbstractBuilder {
 	private Document doc;
-	private Element root;
-	private Element parent;
-	private Element current;
+
+	private NodeAdapter rootAdapter;
+	private NodeAdapter parentAdapter;
+	private NodeAdapter currentAdapter;
 
 	public DOMBuilder(String rootName) {
 		init(rootName);
 	}
 
 	public void addAbove(String uncle) {
-		if (current == root)
+		if (getCurrent() == getRoot())
 			throw new RuntimeException(CANNOT_ADD_ABOVE_ROOT);
 		history.pop();
 		boolean atRootNode = (history.size() == 1);
 		if (atRootNode)
 			throw new RuntimeException(CANNOT_ADD_ABOVE_ROOT);
 		history.pop();
-		current = (Element) history.peek();
+		setCurrent((NodeAdapter) history.peek());
 		addBelow(uncle);
 	}
 
 	public void addGrandfather(String grandfather) {
-		if (current == root)
+		if (getCurrent() == getRoot())
 			throw new RuntimeException(CANNOT_ADD_ABOVE_ROOT);
 		history.pop();
 		boolean atRootNode = (history.size() == 1);
@@ -41,35 +42,38 @@ public class DOMBuilder extends AbstractBuilder {
 			throw new RuntimeException(CANNOT_ADD_ABOVE_ROOT);
 		history.pop();
 		history.pop();
-		current = (Element) history.peek();
+		setCurrent((NodeAdapter) history.peek());
 		addBelow(grandfather);
 	}
 
 	public void addAttribute(String name, String value) {
-		current.setAttribute(name, value);
+		getCurrent().addAttribute(name, value);
 	}
 
 	public void addBelow(String child) {
-		Element childNode = doc.createElement(child);
-		current.appendChild(childNode);
-		parent = current;
-		current = childNode;
-		history.push(current);
+		NodeAdapter childNode = createElement(child);
+		getCurrent().appendChild(childNode);
+		setParent(getCurrent());
+		setCurrent(childNode);
+		history.push(getCurrent());
+	}
+
+	private NodeAdapter createElement(String child) {
+		return new ElementAdapter(doc.createElement(child));
 	}
 
 	public void addBeside(String sibling) {
-		if (current == root)
+		if (getCurrent() == getRoot())
 			throw new RuntimeException(CANNOT_ADD_BESIDE_ROOT);
-		Element siblingNode = doc.createElement(sibling);
-		parent.appendChild(siblingNode);
-		current = siblingNode;
+		NodeAdapter siblingNode = createElement(sibling);
+		getParent().appendChild(siblingNode);
+		setCurrent(siblingNode);
 		history.pop();
-		history.push(current);
+		history.push(getCurrent());
 	}
 
 	public void addValue(String value) {
-		current.appendChild(doc.createTextNode(value));
-	}
+		getCurrent().addValue(doc.createTextNode(value));	}
 
 	public Document getDocument() {
 		return doc;
@@ -77,12 +81,12 @@ public class DOMBuilder extends AbstractBuilder {
 
 	protected void init(String rootName) {
 		doc = new DocumentImpl();
-		root = doc.createElement(rootName);
-		doc.appendChild(root);
-		current = root;
-		parent = root;
+		setRoot(createElement(rootName));
+		doc.appendChild((Node) getRoot().getNode());
+		setCurrent(getRoot());
+		setParent(getRoot());
 		history = new Stack();
-		history.push(current);
+		history.push(getCurrent());
 	}
 
 	public void startNewBuild(String rootName) {
@@ -101,5 +105,29 @@ public class DOMBuilder extends AbstractBuilder {
 			return ioe.getMessage();
 		}
 		return stringOut.toString();
+	}
+
+	public NodeAdapter getRoot() {
+		return rootAdapter;
+	}
+
+	public NodeAdapter getParent() {
+		return parentAdapter;
+	}
+
+	public NodeAdapter getCurrent() {
+		return currentAdapter;
+	}
+
+	public void setRoot(NodeAdapter root) {
+		this.rootAdapter = root;
+	}
+
+	public void setParent(NodeAdapter parent) {
+		this.parentAdapter = parent;
+	}
+
+	public void setCurrent(NodeAdapter current) {
+		this.currentAdapter = current;
 	}
 }
